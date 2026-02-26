@@ -22,6 +22,19 @@ if [ "$USAGE" -ge "$THRESHOLD" ]; then
     echo "Usage above threshold. Running cleanup..."
     etcmd -s kmssh root@$SERVER "sudo yum clean all" || exit 1
 
+    # Check usage again after cleanup
+    NEW_USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$5}' | sed 's/%//g'")
+
+    echo
+    echo "Disk utilization after script execution:"
+    echo "--------------------------------"
+    etcmd -s kmssh root@$SERVER "df -hT /"
+
+    # If still above threshold → show large directories
+    if [ "$NEW_USAGE" -ge "$THRESHOLD" ]; then
+        echo "Root usage still above threshold — showing large directories:"
+        etcmd -s kmssh root@$SERVER "du -h /root | grep '[0-9]G' | sort -n"
+    fi
 fi
 
 exit 0

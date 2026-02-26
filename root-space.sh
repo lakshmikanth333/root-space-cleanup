@@ -14,7 +14,7 @@ printf "\n===== Current Disk Utilization =====\n"
 etcmd -s kmssh root@$SERVER "df -hT /"
 
 # Get current usage value (remove % using sed)
-USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$5}' | sed 's/%//g'") || exit 2
+USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$6}' | sed 's/%//g'") || exit 2
 
 # If usage above threshold → run cleanup
 if [ "$USAGE" -ge "$THRESHOLD" ]; then
@@ -22,7 +22,7 @@ if [ "$USAGE" -ge "$THRESHOLD" ]; then
     etcmd -s kmssh root@$SERVER "sudo yum clean all" || exit 1
 
     # Check usage again after cleanup
-    NEW_USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$5}' | sed 's/%//g'")
+    NEW_USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$6}' | sed 's/%//g'")
 
     printf "\n===== Disk Utilization After Cleanup =====\n"
     echo "--------------------------------"

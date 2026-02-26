@@ -10,8 +10,7 @@ SERVER=$1
 THRESHOLD=90
 
 # Show current disk utilization (remote)
-echo "Current disk utilization is"
-echo "--------------------------------"
+printf "\n===== Current Disk Utilization =====\n"
 etcmd -s kmssh root@$SERVER "df -hT /"
 
 # Get current usage value (remove % using sed)
@@ -25,15 +24,14 @@ if [ "$USAGE" -ge "$THRESHOLD" ]; then
     # Check usage again after cleanup
     NEW_USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$5}' | sed 's/%//g'")
 
-    echo
-    echo "Disk utilization after script execution:"
+    printf "\n===== Disk Utilization After Cleanup =====\n"
     echo "--------------------------------"
     etcmd -s kmssh root@$SERVER "df -hT /"
 
     # If still above threshold → show large directories
     if [ "$NEW_USAGE" -ge "$THRESHOLD" ]; then
-        echo "Root usage still above threshold — showing large directories:"
-        etcmd -s kmssh root@$SERVER "du -h /root | grep '[0-9]G' | sort -n"
+        printf "\n===== Large Directories Consuming Space =====\n"
+        etcmd -s kmssh root@$SERVER "du -h / 2>/dev/null | grep '[0-9]G' | sort -n"
     fi
 fi
 

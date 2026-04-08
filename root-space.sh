@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Validate input argument (server name required)
+# Validate input argument (server name is name required)
 if [ $# -ne 1 ]; then
    echo "Usage: $0 <server_name>"
    exit 1
@@ -14,7 +14,7 @@ printf "\n===== Current Disk Utilization =====\n"
 etcmd -s kmssh root@$SERVER "df -hT /"
 
 # Get current usage value (remove % using sed)
-USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$6}' | sed 's/%//g'") || exit 2
+USAGE=$(etcmd -s kmssh root@$SERVER "df -hT / | awk 'NR==2 {print \$6}' | sed 's/%//g'") || exit 1
 
 # If usage above threshold → run cleanup
 if [ "$USAGE" -ge "$THRESHOLD" ]; then
